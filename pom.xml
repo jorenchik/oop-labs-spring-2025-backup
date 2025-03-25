@@ -2,7 +2,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>JTM</artifactId>
+    <artifactId>js21283</artifactId>
     <groupId>jtm</groupId>
     <name>Java Training Materials</name>
     <description>Project for practical exercises</description>
@@ -51,12 +51,27 @@
             <version>8.0.33</version>
         </dependency>
         <!-- Junit tests -->
+	    <!--
+	<dependency>
+	    <groupId>junit</groupId>
+	    <artifactId>junit</artifactId>
+	    <version>4.13.2</version>
+	</dependency>
+        -->
+	    <!--
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
             <version>5.10.2</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-junit-jupiter</artifactId>
+            <version>5.12.0</version>
+            <scope>test</scope>
+        </dependency>
+        -->
         <!-- Swing exercise -->
         <dependency>
             <groupId>com.miglayout</groupId>
@@ -80,10 +95,52 @@
             <artifactId>spring-test</artifactId>
             <version>6.1.8</version>
         </dependency>
+        <!--
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <version>3.3.0</version>
+        </dependency>
+        -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <version>3.3.0</version>
+            <exclusions>
+                <!-- Exclude all JUnit 5 (Jupiter) components -->
+                <exclusion>
+                    <groupId>org.junit.jupiter</groupId>
+                    <artifactId>junit-jupiter</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.junit.jupiter</groupId>
+                    <artifactId>junit-jupiter-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.junit.jupiter</groupId>
+                    <artifactId>junit-jupiter-engine</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.junit.jupiter</groupId>
+                    <artifactId>junit-jupiter-params</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.junit.platform</groupId>
+                    <artifactId>junit-platform-commons</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.junit.platform</groupId>
+                    <artifactId>junit-platform-engine</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apiguardian</groupId>
+                    <artifactId>apiguardian-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.opentest4j</groupId>
+                    <artifactId>opentest4j</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <!-- Selenium Web Driver tests -->
         <dependency>
@@ -110,13 +167,6 @@
             <groupId>org.jacoco</groupId>
             <artifactId>org.jacoco.core</artifactId>
             <version>${jacoco.version}</version>
-        </dependency>
-        <!-- Mockito mock objects -->
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-junit-jupiter</artifactId>
-            <version>5.12.0</version>
-            <scope>test</scope>
         </dependency>
         <!-- JPA exercise -->
         <dependency>
