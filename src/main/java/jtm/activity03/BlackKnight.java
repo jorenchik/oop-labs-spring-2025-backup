@@ -20,11 +20,22 @@ public class BlackKnight {
     public boolean alive; // is knight alive
 
     public static void setBattle(int initialNumber) {
+    	knights = new BlackKnight[initialNumber];
+    	totalKnights = 0;
+    	deadKnights = 0;
+    	aliveKnights = 0;
         // TODO initialize array of knights with the passed size.
         // Reset total numbers of total, alive and dead knights to zero
     }
 
     public BlackKnight(String name) {
+    	arms = 2;
+    	legs = 2;
+    	head = 1;
+    	alive = true;
+    	knights[totalKnights++] = this;
+    	aliveKnights++;
+
         // TODO set name of newly created knight
         // 1. set proper count of his arms, legs and head,
         // 2. set his status to alive
@@ -37,11 +48,19 @@ public class BlackKnight {
     }
 
     public String cutOffArm() {
+    	if (!alive) {
+    		return "Only chicken beats dead!";
+    	}
+    	if (arms > 0) {
+    		arms--;
+    		return "Tis but a scratch!";
+    	} else {
+    		return "Haah!";
+    	}
         // TODO handle cutting off knight's arms in following way:
         // If knight is dead, return "Only chicken beats dead!"
         // If knight has some arms, cut one off and return "Tis but a scratch!"
         // Else return just "Haah!"
-        return "";
     }
 
     public String cutOffLeg() {
@@ -49,7 +68,15 @@ public class BlackKnight {
         // If knight is dead, return "Only chicken beats dead!"
         // If knight has some legs, cut one off and return "Had worse!"
         // Else return just "Haah!"
-        return "";
+    	if (!alive) {
+    		return "Only chicken beats dead!";
+    	}
+    	if (legs > 0) {
+    		legs--;
+    		return "Had worse!";
+    	} else {
+    		return "Haah!";
+    	}
     }
 
     public String cutOffHead() {
@@ -61,7 +88,33 @@ public class BlackKnight {
         // "You'll never win! Arthur, Cnut will still fight!"
         // Where "Arthur, Cnut" are names of still alive knights
         // Else return "You'll burn in hell forever!"
-        return "";
+    	if (!alive) {
+    		return "Only chicken beats dead!";
+    	}
+    	if (head > 0) {
+    		head--;
+    		alive = false;
+    		aliveKnights--;
+    		deadKnights++;
+    	}
+    	var sb = new StringBuilder();
+    	if (aliveKnights > 0) {
+			sb.append("You'll never win! ");
+			boolean isFirst = true;
+    		for (int i = 0; i < totalKnights; i++) {
+    			if (knights[i].alive) {
+    				if (isFirst) {
+    					isFirst = false;
+    				} else {
+    					sb.append(", ");
+    				}
+					sb.append(knights[i].name);
+    			}
+    		}
+			sb.append(" will still fight!");
+    	} else {
+			sb.append("You'll burn in hell forever!");
+    	}
+    	return sb.toString();
     }
-
 }
