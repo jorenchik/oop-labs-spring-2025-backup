@@ -4,51 +4,52 @@ public class Human implements Humanoid {
 
     private boolean alive = true;
 
-    private Integer stomachContents = null;
+    public Integer stomachContents = 0;
 
-    private int weight;
+    public int weight;
 
     public Human() {
         this.weight = BirthWeight;
     }
 
-    @Override
     public void eat(Integer food) {
-        if (alive && stomachContents == null && food != null) {
+        if (alive && stomachContents == 0 && food != null) {
             stomachContents = food;
             weight += food;
         }
     }
 
-    @Override
-    public Object vomit() {
+    public Integer vomit() {
         Integer food = stomachContents;
         if (food != null) {
             weight -= food;
         }
-        stomachContents = null;
+        stomachContents = 0;
         return food;
     }
 
-    @Override
     public String isAlive() {
         return alive ? "Alive" : "Dead";
     }
 
-    @Override
     public String killHimself() {
         alive = false;
         return "Dead";
     }
 
-    @Override
     public int getWeight() {
         return weight;
     }
 
-    @Override
     public String toString() {
         String contentString = (stomachContents != null) ? stomachContents.toString() : "";
         return String.format("%s: %d [%s]", getClass().getSimpleName(), getWeight(), contentString);
+    }
+
+    public Object clone() throws CloneNotSupportedException {
+        Human copy = new Human();
+        copy.weight = this.weight;
+		copy.stomachContents = stomachContents;
+        return copy;
     }
 }

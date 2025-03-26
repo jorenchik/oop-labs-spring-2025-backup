@@ -2,8 +2,9 @@ package jtm.activity06;
 
 public class Martian implements Alien {
 
-    private int weight = BirthWeight;
-    private Object stomachContents = null;
+    public int weight = BirthWeight;
+
+    public Object stomachContents = null;
 
     @Override
     public void eat(Object item) {
@@ -16,11 +17,13 @@ public class Martian implements Alien {
         } else if (item instanceof Humanoid) {
             Humanoid humanoid = (Humanoid) item;
             gainedWeight = humanoid.getWeight();
-//            humanoid.kill();
+            //??
+            //humanoid.kill();
         } else if (item instanceof Alien) {
             Alien alien = (Alien) item;
             gainedWeight = alien.getWeight();
-//            alien.killHimself(); 
+            //??
+            //alien.kill(); 
         } else {
             return;
         }
@@ -29,29 +32,42 @@ public class Martian implements Alien {
         stomachContents = item;
     }
 
-    @Override
+    public void eat(Integer food) {
+        if (stomachContents == null && food != null) {
+            stomachContents = food;
+            weight += food;
+        }
+    }
+
     public Object vomit() {
         Object vomited = stomachContents;
+        if (stomachContents != null) {
+			if (stomachContents instanceof Integer) {
+				weight -= (Integer) stomachContents;
+			} else if (stomachContents instanceof Humanoid) {
+				Humanoid humanoid = (Humanoid) stomachContents;
+				weight -= humanoid.getWeight();
+			} else if (stomachContents instanceof Alien) {
+				Alien alien = (Alien) stomachContents;
+				weight -= alien.getWeight();
+			}
+        }
         stomachContents = null;
         return vomited;
     }
 
-    @Override
     public int getWeight() {
         return weight;
     }
 
-    @Override
     public String isAlive() {
         return "I AM IMMORTAL!";
     }
 
-    @Override
     public String killHimself() {
         return "I AM IMMORTAL!";
     }
 
-	@Override
 	public String toString() {
 		String contentString = "";
 
@@ -68,5 +84,29 @@ public class Martian implements Alien {
 		}
 
 		return String.format("%s: %d [%s]", getClass().getSimpleName(), weight, contentString);
+	}
+
+    public Object clone() throws CloneNotSupportedException {
+        Martian copy = new Martian();
+        copy.weight = this.weight;
+
+        if (this.stomachContents != null) {
+            copy.stomachContents = clone(this.stomachContents);
+        }
+
+        return copy;
+    }
+
+    private Object clone(Object current) throws CloneNotSupportedException {
+		if (current instanceof Martian) {
+			return ((Martian) current).clone();
+		} else if (current instanceof Human) {
+			//current.getClass().getMethod("clone").invoke(current)
+			return ((Human) current).clone();
+		} else if (current instanceof Integer) {
+			return current;
+		} else {
+			throw new CloneNotSupportedException();
+		}
 	}
 }
