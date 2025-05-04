@@ -46,6 +46,10 @@ public class Road {
 		this.distance = distance;
 	}
 	
+    public float computeNecessaryFuelForConsumption(float consumption) {
+    	return (float) (distance * (consumption / 100));
+    }
+	
     /*- TODO #4
      * Select menu: Source — Generate toString()...
      * and implement this method, that it returns String in form:

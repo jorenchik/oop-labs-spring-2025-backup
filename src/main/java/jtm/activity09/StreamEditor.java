@@ -5,80 +5,89 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.List;
 
-/*-
- * This is simple text stream editor. It reads text from file/standard input,
- * changes/deletes passed line and writes everything into file/standard output.
- *
- * Parameters:
- *
- * 1. number of line.
- *    If positive number, line is replaced/added into text,
- *    if negative, line is deleted from the text.
- * 2. Text to add/replace into specified line.
- *    If number is negative, enter dash (or whatever) as a padding
- *    for this parameter as it will be ignored.
- * 3. input file.
- *    If dash is specified, editor reads from standard input, otherwise it is file name.
- * 4. output file.
- *    If dash is specified, editor writes to standard input, otherwise it is file name.
- * HINTS:
- * 1. to pass parameters, you can run editor in terminal, for example, with following command:
- *   java -cp target/classes jtm.activity09.StreamEditor 2 aaaa - -
- * 2. to pass parameters for command in Eclipse, select:
- *   a) menu: Run — Run configurations...
- *   b) tree: Java applications — StreamEditor
- *   c) tab arguments, and field Program arguments, enter parameters there
- *   d) press Run
+/**
+ * Simple text stream editor. Reads text from file or stdin,
+ * edits or deletes the specified line, and writes to file or stdout.
  */
 public class StreamEditor {
 
     public static void main(String[] args) throws Exception {
-        String inFileName, outFileName; // Names of input and output files
-        int inLineNo = 0; // Line number, which needs to be changed, deleted
-        String content; // String content which needs to be put in line
-        PrintWriter writer = null; // Buffered writer of characters
-        BufferedReader reader = null; // Buffered reader of characters
-        File inFile; // File for file system operations
-        int curLineNo = 0; // Counter of current/read line of input file
-        String curLineContent; // Content of current line of input file
-        boolean delete = false; // Should delete line?
+        // Check parameters
+        if (args == null || args.length != 4) {
+            System.err.println("Please use arguments: [-]lineNo (TextToAdd/Replace|-) (inputFile|-) (outputFile|-)");
+            System.exit(1);
+        }
 
-        /*- TODO Check number of passed parameters. If they are null or number of
-         * them is not 4, write to standard error (System.err):
-         * Please use arguments: [-]lineNo (TextToAdd/Replace|-) (inputFile|-) (outputFile|-)
-         * and exit with System.exit(1); to pass error status of finished program.
-         */
+        // Parse line number and deletion flag
+        int rawLineNo = Integer.parseInt(args[0]);
+        boolean delete = rawLineNo < 0;
+        int targetLine = Math.abs(rawLineNo);
 
-        // TODO Get integer from the 1st argument. Note that line should be
-        // deleted if number is negative.
-        // Hint. Use Integer.parseInt() to parse String into integer
+        // Text to add/replace (ignored if deleting)
+        String content = args[1];
 
-        // TODO set value of the string from 2nd parameter into content
+        // Input and output file names
+        String inFileName = args[2];
+        String outFileName = args[3];
 
-        /*- TODO Initialize new buffered character reader (BufferedReader) and:
-         * 1. If input file name (3rd parameter) is "-", add reader to the Standard input (System.in).
-         * 2. Otherwise check if file exists (if it doesn't, create it) and
-         *    add reader to this file.
-         */
+        // Initialize reader
+        BufferedReader reader;
+        if ("-".equals(inFileName)) {
+            reader = new BufferedReader(new InputStreamReader(System.in));
+        } else {
+            File inFile = new File(inFileName);
+            if (!inFile.exists()) {
+                inFile.createNewFile();
+            }
+            reader = new BufferedReader(new FileReader(inFile));
+        }
 
-        /*- TODO Initialize new buffered character writer (PrintWriter) and:
-         *  1. If output file name (4th parameter) is "-", add writer to the standard output (System.out)
-         *  2. Otherwise initialize writer to the file of given name.
-         */
+        // Initialize writer
+        PrintWriter writer;
+        if ("-".equals(outFileName)) {
+            writer = new PrintWriter(System.out);
+        } else {
+            writer = new PrintWriter(new File(outFileName));
+        }
 
+        // Read all lines
+        List<String> allLines = new ArrayList<>();
+        String line;
+        while ((line = reader.readLine()) != null) {
+            allLines.add(line);
+        }
 
-        // TODO Read lines in loop from passed file/standard input till to the
-        // end. Count number of read lines. Before appending line into writer
-        // check, if it needs to be changed/deleted. Change its value to passed
-        // content or just skip appending it to the writer.
-        // NOTE: append break at the end of written line only if it is NOT null
-        // or empty string!
+        // Pad with empty lines if necessary
+        while (allLines.size() < targetLine) {
+            allLines.add("");
+        }
 
-        // TODO If number of input line is larger than number of lines in file,
-        // pad file with empty lines before necessary line.
+        // Modify or delete the target line
+        if (delete) {
+            if (targetLine >= 1 && targetLine <= allLines.size()) {
+                allLines.remove(targetLine - 1);
+            }
+        } else {
+            allLines.set(targetLine - 1, content);
+        }
 
-        // TODO flush cache of the writer and close connections of the reader
-        // and writer
+        // Write out lines
+        for (String outLine : allLines) {
+            if (outLine != null) {
+                writer.write(outLine);
+                // Append newline only for non-empty lines
+                if (!outLine.isEmpty()) {
+                    writer.println();
+                }
+            }
+        }
+
+        // Cleanup
+        writer.flush();
+        reader.close();
+        writer.close();
     }
 }
