@@ -17,13 +17,14 @@ public class Martian implements Alien {
         } else if (item instanceof Humanoid) {
             Humanoid humanoid = (Humanoid) item;
             gainedWeight = humanoid.getWeight();
+            humanoid.killHimself();
             //??
             //humanoid.kill();
         } else if (item instanceof Alien) {
             Alien alien = (Alien) item;
             gainedWeight = alien.getWeight();
             //??
-            //alien.kill(); 
+            alien.killHimself(); 
         } else {
             return;
         }

@@ -1,3 +1,4 @@
+// File: TttCli.java
 package jtm.activity10;
 
 import java.io.InputStream;
@@ -11,15 +12,15 @@ import java.util.Scanner;
  * Do not change this class!
  */
 public class TttCli {
-    private final int size; // Size of one size of the board
-    private final char[] board; // board of the game
-    private char move = '×'; // char for current move
-    private final Scanner scanner; // reader from the input stream
+    private final int size;       // Size of one side of the board
+    private final char[] board;   // board of the game
+    private char move = '×';      // char for current move
+    private final Scanner scanner;    // reader from the input stream
     private final PrintWriter writer; // writer to the output stream
 
     public TttCli(InputStream input, OutputStream output, int size) {
         scanner = new Scanner(input);
-        writer = new PrintWriter(output);
+        writer = new PrintWriter(output, true);  // auto-flush on println
         if (size < 1)
             end();
         this.size = size;
@@ -50,10 +51,7 @@ public class TttCli {
      * Toggle pieces of moves
      */
     private void toggleMove() {
-        if (move == '×')
-            move = '○';
-        else
-            move = '×';
+        move = (move == '×') ? '○' : '×';
     }
 
     /**
@@ -73,7 +71,6 @@ public class TttCli {
      */
     private void write(String message) {
         writer.println(message);
-        writer.flush();
     }
 
     /**
@@ -127,5 +124,4 @@ public class TttCli {
         TttCli game = new TttCli(System.in, System.out, size);
         game.play();
     }
-
 }

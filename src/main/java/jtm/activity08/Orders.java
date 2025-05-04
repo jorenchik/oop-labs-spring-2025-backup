@@ -29,7 +29,7 @@ package jtm.activity08;
  *  - ItemN: Customer1,Customer2: 4
  */
 
-public class Orders {
+//public class Orders {
     /*-
      * TODO #1
      * Create data structure to hold:
@@ -40,4 +40,126 @@ public class Orders {
      *   2. when constructing list of orders, set number of current order to -1
      *      (which is usual approach when working with iterateable collections).
      */
+//}
+
+import java.util.*;
+
+/**
+ * Collection of Order objects with iterable and collection utilities.
+ */
+public class Orders implements Iterator<Order> {
+    private final List<Order> items;
+    private int currentIndex;
+    private boolean canRemove;
+
+    /**
+     * Create new empty Orders
+     */
+    public Orders() {
+        this.items = new ArrayList<>();
+        this.currentIndex = -1;
+        this.canRemove = false;
+    }
+
+    /**
+     * Add passed order to the Orders
+     * @param item Order to add (must not be null)
+     */
+    public void add(Order item) {
+        Objects.requireNonNull(item, "Order item must not be null");
+        items.add(item);
+    }
+
+    /**
+     * List of all customer orders
+     * @return new List<Order> containing all orders
+     */
+    public List<Order> getItemsList() {
+        return new ArrayList<>(items);
+    }
+
+    /**
+     * Calculated Set of Orders from list: merges orders for the same item
+     * by summing counts and concatenating customer names.
+     * @return Set<Order> of aggregated orders
+     */
+    public Set<Order> getItemsSet() {
+        Map<String, Order> agg = new LinkedHashMap<>();
+        sort();
+        
+        for (Order o : items) {
+            String itemName = o.getName();
+            if (agg.containsKey(itemName)) {
+                Order existing = agg.get(itemName);
+                String mergedCustomers = existing.getCustomer() + "," + o.getCustomer();
+                int mergedCount = existing.getCount() + o.getCount();
+                // Note: constructor parameters: (orderer, itemName, count)
+                agg.put(itemName, new Order(mergedCustomers, itemName, mergedCount));
+            } else {
+                // copy original order
+                agg.put(itemName, new Order(o.getCustomer(), itemName, o.getCount()));
+            }
+        }
+        return new LinkedHashSet<>(agg.values());
+    }
+
+    /**
+     * Sort list of orders according to their compareTo implementation
+     */
+    public void sort() {
+        Collections.sort(items);
+        // Reset iterator state if needed
+        this.currentIndex = -1;
+        this.canRemove = false;
+    }
+
+    // -------- Iterator<Order> methods --------
+
+    /**
+     * Check if there is next Order in Orders
+     * @return true if next element exists
+     */
+    @Override
+    public boolean hasNext() {
+        return currentIndex + 1 < items.size();
+    }
+
+    /**
+     * Get next Order from Orders
+     * @return next Order
+     * @throws NoSuchElementException if no next element
+     */
+    @Override
+    public Order next() {
+        if (!hasNext()) {
+            throw new NoSuchElementException("No more orders available");
+        }
+        currentIndex++;
+        canRemove = true;
+        return items.get(currentIndex);
+    }
+
+    /**
+     * Remove current Order (last returned by next) from list
+     * @throws IllegalStateException if next() hasn't been called or remove() already called
+     */
+    @Override
+    public void remove() {
+        if (!canRemove) {
+            throw new IllegalStateException("remove() can only be called once after next()");
+        }
+        items.remove(currentIndex);
+        currentIndex--;
+        canRemove = false;
+    }
+
+    /**
+     * Show list of Orders as a String
+     * @return String representation of orders list
+     */
+    @Override
+    public String toString() {
+        return items.toString();
+    }
 }
+

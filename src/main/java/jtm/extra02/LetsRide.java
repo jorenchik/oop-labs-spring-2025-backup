@@ -1,40 +1,42 @@
 package jtm.extra02;
 
-/**
- * This class represents a bus driving in route, stopping at bus stops and
- * adding passengers.
- */
 public class LetsRide {
-    int busStopCount;// bus stop count
-    int passengersAtStart;// passengers at the start in bus
-    int passengersCount;// overall passengers count in bus
-    int seatsCount;// bus seats count
+    int busStopCount;       // Number of bus stops
+    int passengersAtStart;  // Passengers already in bus
+    int passengersCount;    // Total after route
+    int seatsCount;         // Total seat capacity
 
     public LetsRide(int busStopCount, int passengersInStop, int seatsCount) {
-        // TODO #1: Set passed values to LetsRide object
+        this.busStopCount = busStopCount;
+        this.passengersAtStart = passengersInStop;
+        this.seatsCount = seatsCount;
+        this.passengersCount = passengersInStop; // Initial passengers set
     }
 
     public int passengersAtRouteEnd() {
-        // TODO #2: Calculate how many passengers will be in bus at the end of
-        // route. Overall passenger count
-        // is incremented by bus stop number. Example: In bus stop No.1
-        // passenger count will be increased by 1, in stop No.2 it
-        // will be increased by 2 and so on until bus reaches route end.
-        // Note: Overall passenger count can't exceed seat count
+        // Add new passengers stop-by-stop
+        for (int stop = 1; stop <= busStopCount; stop++) {
+            if (passengersCount + stop <= seatsCount) {
+                passengersCount += stop;
+            } else {
+                // Only add as many as fit
+                int availableSeats = seatsCount - passengersCount;
+                passengersCount += availableSeats;
+                break; // Bus full, exit early
+            }
+        }
         return passengersCount;
     }
 
     public int freeSeats() {
-        int freeSeats = 0;
-        // TODO #3: Calculate how much seats are free in bus
-        return freeSeats;
+        return seatsCount - passengersCount;
     }
 
     public boolean isFull() {
-        // TODO #4: Check if bus is full.
-        return false;
+        return passengersCount >= seatsCount;
     }
 
+    // Getters/Setters already provided and unchanged
     public int getBusStopCount() {
         return busStopCount;
     }
@@ -66,5 +68,4 @@ public class LetsRide {
     public void setSeatsCount(int seatsCount) {
         this.seatsCount = seatsCount;
     }
-
 }

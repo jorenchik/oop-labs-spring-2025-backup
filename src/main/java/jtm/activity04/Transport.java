@@ -52,17 +52,17 @@ public class Transport {
 		return tankSize;
 	}
 
-//	public void setTankSize(int tankSize) {
-//		this.tankSize = tankSize;
-//	}
+	public void setTankSize(int tankSize) {
+		this.tankSize = tankSize;
+	}
 
 	public float getFuelInTank() {
 		return fuelInTank;
 	}
 
-//	public void setFuelInTank(float fuelInTank) {
-//		this.fuelInTank = fuelInTank;
-//	}
+	public void setFuelInTank(float fuelInTank) {
+		this.fuelInTank = fuelInTank;
+	}
     
     
     /*- TODO #4
@@ -87,7 +87,21 @@ public class Transport {
         // TODO #5 return required value
         return String.format("%s %s", id, this.getClass().getSimpleName());
     }
+    
+    protected static String cannotMove(Road road, float necessaryFuel, float fuelInTank) {
+		return String.format(
+			Locale.US,
+			"Cannot move on %s — %s, %dkm. Necessary fuel:%.2fl, fuel in tank:%.2fl",
+			road.getFrom(), road.getTo(), road.getDistance(), necessaryFuel, fuelInTank
+		);
+    }
 
+    protected String moving(Road road) {
+		return String.format(
+			"%s is moving on %s — %s, %dkm",
+			getType(), road.getFrom(), road.getTo(), road.getDistance()
+		);
+    }
 
 	// HINT: use getType() to describe transport and road.toString() to describe
     // road
@@ -101,19 +115,12 @@ public class Transport {
         // "Cannot move on From–To, 180km. Necessary
         // fuel:0.00l, fuel in tank:0.00l"
     	
-    	float necessaryFuel = (float) road.getDistance() * (consumption / 100);
+    	float necessaryFuel = road.computeNecessaryFuelForConsumption(consumption);
     	if (fuelInTank >= necessaryFuel) {
     		fuelInTank -= necessaryFuel;
-			return String.format(
-				"%s is moving on %s — %s, %dkm",
-				getType(), road.getFrom(), road.getTo(), road.getDistance()
-			);
+    		return moving(road);
 		} else {
-			return String.format(
-				Locale.US,
-				"Cannot move on %s — %s, %dkm. Necessary fuel:%.2fl, fuel in tank:%.2fl",
-				road.getFrom(), road.getTo(), road.getDistance(), necessaryFuel, fuelInTank
-			);
+			return cannotMove(road, necessaryFuel, getFuelInTank());
 		}
     }
 }
