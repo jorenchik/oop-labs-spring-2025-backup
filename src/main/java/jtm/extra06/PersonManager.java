@@ -32,21 +32,25 @@ public class PersonManager {
     }
 
     /**
-     * Save passed Person in the database
+     * Save passed Person in the database.
      *
      * @param person the Person object to persist
      * @return true on success, false on error (e.g. person already exists)
      */
     public boolean createPerson(Person person) {
-        // Create entity manager
         try (EntityManager em = managerFactory.createEntityManager()) {
-            // TODO search for already existing person and return false if exists
-            // Start transaction
+            // Check if person already exists by ID
+            if (em.find(Person.class, person.getId()) != null) {
+                return false;
+            }
+
             em.getTransaction().begin();
-            // TODO save person using persist(...) method
-            // Commit transaction
+            em.persist(person);
             em.getTransaction().commit();
             return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
         }
     }
 
@@ -57,8 +61,9 @@ public class PersonManager {
      * @return the Person object, or null if not found
      */
     public Person getPersonById(int id) {
-        // TODO create entity manager and retrieve person using find(Person.class, id) method
-        return null;
+        try (EntityManager em = managerFactory.createEntityManager()) {
+            return em.find(Person.class, id);
+        }
     }
 
     /**
@@ -67,9 +72,9 @@ public class PersonManager {
      * @return a List of all Person objects
      */
     public List<Person> getAllPersons() {
-        // TODO create entity manager and retrieve all persons using
-        // createQuery("SELECT p FROM Person p", Person.class).getResultList() methods
-        return null;
+        try (EntityManager em = managerFactory.createEntityManager()) {
+            return em.createQuery("SELECT p FROM Person p", Person.class).getResultList();
+        }
     }
 
     /**
@@ -79,9 +84,20 @@ public class PersonManager {
      * @return true on success, false on error (e.g. person doesn't exist)
      */
     public boolean updatePerson(Person person) {
-        // TODO create entity manager and retrieve all persons using merge(person) method
-        // Use transactions
-        return false;
+        try (EntityManager em = managerFactory.createEntityManager()) {
+            Person existing = em.find(Person.class, person.getId());
+            if (existing == null) {
+                return false;
+            }
+
+            em.getTransaction().begin();
+            em.merge(person);
+            em.getTransaction().commit();
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     /**
@@ -91,10 +107,19 @@ public class PersonManager {
      * @return true on success, false on error (e.g. person doesn't exist)
      */
     public boolean deletePerson(int id) {
-        // TODO create entity manager
-        // find person using find(Person.class, id) and delete person from database using remove(person)
-        // methods of entity manager
-        // use transactions
-        return false;
+        try (EntityManager em = managerFactory.createEntityManager()) {
+            Person person = em.find(Person.class, id);
+            if (person == null) {
+                return false;
+            }
+
+            em.getTransaction().begin();
+            em.remove(person);
+            em.getTransaction().commit();
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 }

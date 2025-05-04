@@ -4,12 +4,6 @@ public class TrafficManagementSystem {
     static Transport[] transports;
     static Road[] roads;
 
-    /**
-     * This method is called to set up TransportManagementSystem
-     *
-     * @param roads
-     * @param transports
-     */
     public static void initSystem(int roads, int transports) {
         addRoads(roads);
         addTransport(transports);

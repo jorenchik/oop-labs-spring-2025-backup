@@ -29,7 +29,7 @@ package jtm.activity08;
  *  - ItemN: Customer1,Customer2: 4
  */
 
-public class Orders {
+//public class Orders {
     /*-
      * TODO #1
      * Create data structure to hold:
@@ -40,4 +40,84 @@ public class Orders {
      *   2. when constructing list of orders, set number of current order to -1
      *      (which is usual approach when working with iterateable collections).
      */
+//}
+
+import java.util.*;
+
+public class Orders implements Iterator<Order> {
+    private final List<Order> items;
+    private int currentIndex;
+    private boolean canRemove;
+
+    public Orders() {
+        this.items = new ArrayList<>();
+        this.currentIndex = -1;
+        this.canRemove = false;
+    }
+
+    public void add(Order item) {
+        Objects.requireNonNull(item, "Order item must not be null");
+        items.add(item);
+    }
+
+    public List<Order> getItemsList() {
+        return new ArrayList<>(items);
+    }
+
+    public Set<Order> getItemsSet() {
+        Map<String, Order> agg = new LinkedHashMap<>();
+        sort();
+        
+        for (Order o : items) {
+            String itemName = o.getName();
+            if (agg.containsKey(itemName)) {
+                Order existing = agg.get(itemName);
+                String mergedCustomers = existing.getCustomer() + "," + o.getCustomer();
+                int mergedCount = existing.getCount() + o.getCount();
+                // Note: constructor parameters: (orderer, itemName, count)
+                agg.put(itemName, new Order(mergedCustomers, itemName, mergedCount));
+            } else {
+                // copy original order
+                agg.put(itemName, new Order(o.getCustomer(), itemName, o.getCount()));
+            }
+        }
+        return new LinkedHashSet<>(agg.values());
+    }
+
+    public void sort() {
+        Collections.sort(items);
+        this.currentIndex = -1;
+        this.canRemove = false;
+    }
+
+    @Override
+    public boolean hasNext() {
+        return currentIndex + 1 < items.size();
+    }
+
+    @Override
+    public Order next() {
+        if (!hasNext()) {
+            throw new NoSuchElementException("No more orders available");
+        }
+        currentIndex++;
+        canRemove = true;
+        return items.get(currentIndex);
+    }
+
+    @Override
+    public void remove() {
+        if (!canRemove) {
+            throw new IllegalStateException("remove() can only be called once after next()");
+        }
+        items.remove(currentIndex);
+        currentIndex--;
+        canRemove = false;
+    }
+
+    @Override
+    public String toString() {
+        return items.toString();
+    }
 }
+

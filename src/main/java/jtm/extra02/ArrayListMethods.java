@@ -7,16 +7,20 @@ public class ArrayListMethods {
     final List<Integer> myList = new ArrayList<>();
 
     public List<Integer> checkArray(int comparator, int... numbers) {
-        // TODO #1:Implement method that compares values of passed array with
-        // passed comparator.
-        // Return list with values that are smaller than comparator.
-        // Hint: Investigate how varargs are used.
+        myList.clear(); // Ensure we don't keep previous data
+        for (int num : numbers) {
+            if (num < comparator) {
+                myList.add(num);
+            }
+        }
         return myList;
     }
 
     public int sumResult() {
         int sum = 0;
-        // TODO #2: Count element sum of the list
+        for (int num : myList) {
+            sum += num;
+        }
         return sum;
     }
 }

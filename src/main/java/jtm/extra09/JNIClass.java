@@ -2,35 +2,24 @@ package jtm.extra09;
 
 public class JNIClass {
 
-    private String value; // variable to store value from native methods
+    private String value;
 
-    /*- TODO #1 declare following native methods:
-     * 1. public native String createArray(int size)
-     * 2. public native void printArray(String string)
-     * 3. public static native void printHello()
-     */
+    // Native method declarations 
+    public native String createArray(int size);
+    public native void printArray(String string);
+    public static native void printHello();
 
+    // Java wrapper method for createArray
+    public void setValue(int size) {
+        this.value = createArray(size);
+    }
 
-    /*- TODO #2
-     * Implement public setter for String value
-     * public void setValue(int size)
-     * which should use native createArray(int size);
-     */
+    // Java getter for value 
+    public String getValue() {
+        return this.value;
+    }
 
-    /*- TODO #3
-     * Implement public getter for String value,
-     * which just returns reference to the value
-     */
-
-
-    // TODO #3 compile this class and generate C header file from it
-
-    /*-
-     * Following static block and main() method is for manual testing purposes only.
-     * It could be be implemented in other Java file.
-     */
-
-    // Check that shared native library is loaded
+    // Load native library 
     static {
         try {
             System.load(System.getProperty("user.dir") + "/lib/jnifunctions.so");
@@ -40,8 +29,13 @@ public class JNIClass {
         }
     }
 
-    // Call native methods from main method
+    // Main method for manual testing 
     public static void main(String[] args) {
-    }
+        JNIClass jni = new JNIClass();
 
+        printHello();
+        jni.setValue(5);
+        System.out.println("Created value: " + jni.getValue());
+        jni.printArray(jni.getValue()); 
+    }
 }

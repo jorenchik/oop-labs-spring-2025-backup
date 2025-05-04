@@ -7,50 +7,70 @@ import java.io.PrintWriter;
 import java.net.Socket;
 
 public class ChatClient implements Runnable {
-    // buffered readers from standard input and server socket stream
     private static BufferedReader stdin, srvin;
-    private static PrintWriter srvout; // writer to server socket stream
-    private static Socket server; // server socket
-    private static Thread t; // thread for server message reader
-    // use the same port number as port in src/resources/appplication.properties
-    // file:
+    private static PrintWriter srvout;
+    private static Socket server;
+    private static Thread t;
+
     static final int port = 7700;
 
     public static void main(String[] args) {
-        // TODO create new socket to the server
-        // add buffered reader to standard input
-        // add print writer to socket's stream
+        try {
+            // Connect to server on localhost
+            server = new Socket("localhost", port);
 
-            // TODO Use ChatClient constructor with server socket as a parameter
-            // for constructor of a new thread, to asynchronously read messages
-            // from the server. Then start this thread.
-            // HINT:
-            // If JUnit test fails with timeout, thats probably because it could not
-            // read data from client (or server, if client didn't send data) in
-            // timely manner.
+            // Standard input (keyboard)
+            stdin = new BufferedReader(new InputStreamReader(System.in));
 
-            ChatClient sc; // reference to ChatClient for server message reader
-            // thread
+            // Writer to server
+            srvout = new PrintWriter(server.getOutputStream(), true); // auto-flush
 
-            // TODO read messages from standard input and send them
-            // to server socket exit from loop and program, if exit or quit is
-            // entered
+            // Client that reads messages from server
+            ChatClient sc = new ChatClient(server);
+            t = new Thread(sc);
+            t.start();
 
-            // TODO handle possible exceptions and exit with error status
+            // Read input from user and send to server
+            String line;
+            while ((line = stdin.readLine()) != null) {
+                srvout.println(line);
+                if (line.equalsIgnoreCase("exit") || line.equalsIgnoreCase("quit")) {
+                    break;
+                }
+            }
 
-            // TODO close all data streams
+        } catch (IOException e) {
+            System.err.println("Error in ChatClient: " + e.getMessage());
+            System.exit(1);
+        } finally {
+            try {
+                if (stdin != null) stdin.close();
+                if (srvin != null) srvin.close();
+                if (srvout != null) srvout.close();
+                if (server != null && !server.isClosed()) server.close();
+            } catch (IOException e) {
+                System.err.println("Error closing ChatClient resources: " + e.getMessage());
+            }
+        }
+    }
+
+    public ChatClient(Socket server) {
+        try {
+            srvin = new BufferedReader(new InputStreamReader(server.getInputStream()));
+        } catch (IOException e) {
+            System.err.println("Error creating server input reader: " + e.getMessage());
+        }
     }
 
     @Override
     public void run() {
-        // TODO read messages in the loop sent from server socket
-        // in this thread
-        // TODO handle exceptions
+        try {
+            String line;
+            while ((line = srvin.readLine()) != null) {
+                System.out.println(line); // Print messages received from server
+            }
+        } catch (IOException e) {
+            System.err.println("Error reading from server: " + e.getMessage());
+        }
     }
-
-    public ChatClient(Socket server) {
-        // TODO try to create buffered reader to passed server socket
-        // TODO handle exceptions
-    }
-
 }

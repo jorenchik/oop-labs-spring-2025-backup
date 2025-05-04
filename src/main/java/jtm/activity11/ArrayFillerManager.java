@@ -2,66 +2,76 @@ package jtm.activity11;
 
 import java.util.LinkedList;
 
-/**
- * This is frontend class for array filler. It uses ArrayFiller to fill array of
- * integers using sequental or concurrent (parallel) approach
- */
 public class ArrayFillerManager {
-    static int[] array; // array to be filled
-    static int latency; // emulated latency in ms
-    static int seedValue; // initial seed value for pseudo-random generator
-    private static LinkedList<Thread> threads; // list of threads when parallel
-    // filling is used
-
-    // HINT feel free to use main() method to call setUp(), fillStupidly() etc.
-    // for debugging purposes if unit tests doesn't show enough information,
-    // what exactly in implementation seems wrong.
-    // Note that main() method will not be used in unit tests.
+    static int[] array;                       // array to be filled
+    static int latency;                       // emulated latency in ms
+    static int seedValue;                     // initial seed value for pseudo-random generator
+    private static LinkedList<Thread> threads; // threads for parallel filling
 
     /**
-     * @param arraySize  size of array
-     * @param latency    wait time
-     * @param seedValue starting cell
-     * @return prepared array
+     * Prepare manager: set parameters and initialize array and thread list
      */
     public static int[] setUp(int arraySize, int latency, int seedValue) {
-        // TODO save passed values in prepared structure
-        // initialize array with passed size
-        // initialize list of threads
-        // return reference to the initialized array
-        return null;
+        ArrayFillerManager.latency = latency;
+        ArrayFillerManager.seedValue = seedValue;
+        array = new int[arraySize];
+        threads = new LinkedList<>();
+        return array;
     }
 
+    /**
+     * Fill array one element at a time, invoking each filler in current thread
+     */
     public static void fillStupidly() {
-        // TODO create cycle which creates new ArrayFiller objects
-        // with filling range of only ONE cell at a time (i.e. range from..to is
-        // 0..0, then 1..1, etc.) and invoke .run() method for these objects.
-        // Note, that invocation of .run() method directly executes it in
-        // current (main) thread.
-        // Note that this method emulates, what would happen if you would send
-        // just small portions of data through media with latency.
+        for (int i = 0; i < array.length; i++) {
+            ArrayFiller filler = new ArrayFiller(latency, seedValue, i, i);
+            filler.run();
+        }
     }
 
+    /**
+     * Fill entire array in one go, using a single filler in current thread
+     */
     public static void fillSequentially() {
-        // TODO create one ArrayFiller object with filling range for ALL array but
-        // executed just in SINGLE thread by invocation of .run() method directly.
-        // Note that this method emulates, what would happen if you would do
-        // proper "buffering" with large amount of data, but do execution just
-        // in single thread.
+        ArrayFiller filler = new ArrayFiller(latency, seedValue);
+        filler.run();
     }
 
+    /**
+     * Fill array in parallel, one filler per element
+     */
     public static void fillParalelly() {
-        // TODO create cycle which creates new ArrayFiller objects
-        // with any range and pass them as references to the Thread constructor.
-        // Add newly created Thread objects into threads list and start them
-        // threads using .start() method. Note that invocation of .start() for
-        // thread object creates new concurrent thread in application
-        // Note that, to pass tests, this implementation should run faster than
-        // fillSequentally() method.
-        //
-        // HINT: Don't forget to check that separately started threads are
-        // actually finished by calling .join() method for them.
-        // Note that this method emulates, what would happen if you do proper
-        // buffering and scaling of the execution.
+        // Clear any previous threads.
+        threads.clear();
+		
+        // Use only as much threads as there are processors.
+		final int coresAvailable = Runtime.getRuntime().availableProcessors();
+		final int coresWanted = 20;
+		final int cores = coresWanted <= coresAvailable ? coresWanted : coresAvailable;
+        final int length = array.length;
+
+        // Chunk and execute.
+        int chunkSize = (length + cores - 1) / cores;
+        System.out.println(chunkSize + " " + cores);
+        for (int i = 0; i < cores; i++) {
+            int start = i * chunkSize;
+            if (start >= length) {
+                break;
+            }
+            int end = Math.min(length - 1, (i + 1) * chunkSize - 1);
+            ArrayFiller filler = new ArrayFiller(latency, seedValue, start, end);
+            Thread t = new Thread(filler);
+            threads.add(t);
+            t.start();
+        }	
+
+        // Wait for all to complete
+        for (Thread t_ : threads) {
+            try {
+                t_.join();
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+        }
     }
 }

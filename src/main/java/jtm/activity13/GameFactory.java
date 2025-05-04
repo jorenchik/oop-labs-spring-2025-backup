@@ -1,27 +1,31 @@
+// File: src/jtm/activity13/GameFactory.java
 package jtm.activity13;
 
 import java.util.ArrayList;
 
 public class GameFactory {
 
-    /**
-     * Sets new board for the game
-     *
-     * @param board reference to the new board
-     */
     public static void setBoard(Board board) {
-        // TODO #1: set passed board to the CrocodileGame
+        CrocodileGame.board = board;
     }
 
-    /**
-     * Adds new crocodile to the list of the game
-     *
-     * @param crocodileType type of the crocodile (CrocodileSimple or CrocodileGreedy)
-     */
     public static void addCrocodile(String crocodileType) {
-        // TODO #2: add new Crocodile to the list according of CrocodileGame
-        // according to the passed type
-        // Check if list is initialized and initialize it if necessary
-    }
+        if (CrocodileGame.crocodile == null) {
+            CrocodileGame.crocodile = new ArrayList<>();
+        }
 
+        Crocodile c;
+        switch (crocodileType) {
+            case "CrocodileSimple":
+                c = new CrocodileSimple();
+                break;
+            case "CrocodileGreedy":
+                c = new CrocodileGreedy();
+                break;
+            default:
+                throw new IllegalArgumentException("Unknown crocodile type: " + crocodileType);
+        }
+
+        CrocodileGame.crocodile.add(c);
+    }
 }
