@@ -1,3 +1,4 @@
+// File: src/jtm/activity13/Board.java
 package jtm.activity13;
 
 public class Board {
@@ -19,44 +20,34 @@ public class Board {
     /**
      * Set value on the board with specified coordinates
      *
-     * @param x     — X coordinates
-     * @param y     — Y coordinates
+     * @param x     — X coordinate
+     * @param y     — Y coordinate
      * @param value — value of the cell
      */
     public void setCandy(int x, int y, char value) {
-        // Note that in mathematical presentation X (horizontal) axis is used
-        // first, but Y (vertical) second
-        // but in array [][] first dimension represents external group (shown on
-        // Y axis), but second — internal group (X axis)
         board[y][x] = value;
     }
 
     /**
-     * @param x — X coordinates
-     * @param y — Y coordinates
+     * @param x — X coordinate
+     * @param y — Y coordinate
      * @return value of the given cell
      */
     public char getCandy(int x, int y) {
         return board[y][x];
     }
 
-    /**
-     * @return X axis size of the board
-     */
+    /** @return X axis size of the board */
     public int getX() {
         return board[0].length;
     }
 
-    /**
-     * @return Y axis size of the board
-     */
+    /** @return Y axis size of the board */
     public int getY() {
         return board.length;
     }
 
-    /**
-     * @return number of candies (marked as '●') on the board
-     */
+    /** @return number of candies (marked as '●') on the board */
     public int countBoardCandies() {
         int candies = 0;
         for (int j = 0; j < getY(); j++) {
@@ -69,13 +60,13 @@ public class Board {
     }
 
     /**
-     * @return cloned copy of the new Board object Note that simple .clone()
-     * method will not work
+     * @return cloned copy of the new Board object (deep copy)
      */
     public Board getClone() {
         char[][] tmpArr = new char[getY()][getX()];
-        for (int j = 0; j < getY(); j++)
-            if (getX() >= 0) System.arraycopy(board[j], 0, tmpArr[j], 0, getX());
+        for (int j = 0; j < getY(); j++) {
+            System.arraycopy(board[j], 0, tmpArr[j], 0, getX());
+        }
         return new Board(tmpArr);
     }
 
@@ -96,5 +87,4 @@ public class Board {
         }
         return sb.toString();
     }
-
 }
