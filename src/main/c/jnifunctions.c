@@ -1,3 +1,4 @@
+#include <jni.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include "../../../lib/jtm_extra09_JNIClass.h" // Reference to generated JNI header file
@@ -30,12 +31,31 @@ void printHello() {
 }
 
 /*****************************************************************
- * TODO export JNI functions and prepare Java to C data mapping  *
+ * JNI functions
  *****************************************************************/
 
+JNIEXPORT jstring JNICALL Java_jtm_extra09_JNIClass_createArray
+  (JNIEnv *env, jobject thisObj, jint size) {
+	char *array = createArray(size);
+	jstring result = (*env)->NewStringUTF(env, array);
+	freeArray(array);
+	return result;
+}
+
+JNIEXPORT void JNICALL Java_jtm_extra09_JNIClass_printArray
+  (JNIEnv *env, jobject thisObj, jstring str) {
+	const char *nativeStr = (*env)->GetStringUTFChars(env, str, 0);
+	printArray(nativeStr);
+	(*env)->ReleaseStringUTFChars(env, str, nativeStr);
+}
+
+JNIEXPORT void JNICALL Java_jtm_extra09_JNIClass_printHello
+  (JNIEnv *env, jclass clazz) {
+	printHello();
+}
 
 // Following main() method is for testing purposes.
 // Look at TODO.html how to compile this file as executable binary
-int main() {
-	printHello();
-}
+// int main() {
+// 	printHello();
+// }
