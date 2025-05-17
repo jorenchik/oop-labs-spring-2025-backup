@@ -15,6 +15,32 @@
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
+
+--
+-- Table structure for table `Type`
+--
+
+DROP TABLE IF EXISTS `Type`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `Type` (
+  `id` int unsigned NOT NULL,
+  `type` varchar(45) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `Type`
+--
+
+LOCK TABLES `Type` WRITE;
+/*!40000 ALTER TABLE `Type` DISABLE KEYS */;
+INSERT INTO `Type` VALUES (1,'Student'),(2,'Teacher');
+/*!40000 ALTER TABLE `Type` ENABLE KEYS */;
+UNLOCK TABLES;
+/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
+
 --
 -- Table structure for table `Person`
 --
@@ -67,31 +93,6 @@ LOCK TABLES `PersonDepartment` WRITE;
 INSERT INTO `PersonDepartment` VALUES (4,'Physics'),(5,'Mathematics'),(6,'Biology');
 /*!40000 ALTER TABLE `PersonDepartment` ENABLE KEYS */;
 UNLOCK TABLES;
-
---
--- Table structure for table `Type`
---
-
-DROP TABLE IF EXISTS `Type`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `Type` (
-  `id` int unsigned NOT NULL,
-  `type` varchar(45) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `Type`
---
-
-LOCK TABLES `Type` WRITE;
-/*!40000 ALTER TABLE `Type` DISABLE KEYS */;
-INSERT INTO `Type` VALUES (1,'Student'),(2,'Teacher');
-/*!40000 ALTER TABLE `Type` ENABLE KEYS */;
-UNLOCK TABLES;
-/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;

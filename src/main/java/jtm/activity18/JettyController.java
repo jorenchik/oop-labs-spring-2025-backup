@@ -4,34 +4,18 @@ import jakarta.servlet.http.HttpServletResponse;
 import jtm.activity17.Teacher;
 import jtm.activity17.TeacherManager;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
 
 @Controller
 @RequestMapping(value = "/", produces = "text/html;charset=UTF-8")
 public class JettyController {
 
-    TeacherManager manager;
+    TeacherManager manager = new TeacherManager();
 
-    /**
-     * method which is invoked when root folder (i.e. http://localhost:8801/) of
-     * web application is requested. This method doesn't take any parameters
-     * passed in URL (address).
-     *
-     * @return string as HTML response to the request using UTF-8 encoding for
-     * non-Latin characters.
-     */
     @GetMapping("")
     @ResponseBody
-    // This method should work without declared name parameter, request and
-    // response objects,
-    // but it shows, how passed request and returned response can be used inside
-    // method
     public String homePage(@RequestParam(value = "name", required = false) String name,
                            HttpServletResponse response) {
         String sb = """
@@ -39,23 +23,89 @@ public class JettyController {
                 <a href='/findTeacher'>Find teacher<a><br/>
                 <a href='/deleteTeacher'>Delete teacher<a><br/>
                 """;
-        // Following is also redundant because status is OK by default:
         response.setStatus(HttpServletResponse.SC_OK);
         return sb;
     }
 
-    // TODO Implement insertTeacher() method
-    public String insertTeacher() {
-        return "";
+    @GetMapping("insertTeacher")
+    @ResponseBody
+    public String insertTeacher(@RequestParam(value = "name", required = false) String name,
+                                @RequestParam(value = "surname", required = false) String surname,
+                                HttpServletResponse response) {
+        if (name == null && surname == null) {
+            return """
+                    <form action=''>
+                    Name: <input type='text' name='name' value=''><br/>
+                    Surname: <input type='text' name='surname' value=''><br/>
+                    <input type='submit' value='Insert'></form><br/>
+                    <a href='/'>Back</a>\n""";
+        }
+
+        if (name == null || surname == null || name.isEmpty() || surname.isEmpty()) {
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            return "false<br/>\n<a href='/'>Back</a>\n";
+        }
+
+        boolean result = manager.insertTeacher(name, surname, "Undefined");
+        response.setStatus(result ? HttpServletResponse.SC_OK : HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        return result + "<br/>\n<a href='/'>Back</a>\n";
     }
 
-    // TODO Implement findTeacher() method
-    public String findTeacher() {
-        return "";
+    @GetMapping("findTeacher")
+    @ResponseBody
+    public String findTeacher(@RequestParam(value = "name", required = false) String name,
+                              @RequestParam(value = "surname", required = false) String surname,
+                              HttpServletResponse response) {
+        if (name == null && surname == null) {
+            return """
+                    <form action=''>
+                    Name: <input type='text' name='name' value=''><br/>
+                    Surname: <input type='text' name='surname' value=''><br/>
+                    <input type='submit' value='Find'></form><br/>
+                    <a href='/'>Back</a>\n""";
+        }
+
+        List<Teacher> teachers = manager.findTeacher(name, surname);
+
+        StringBuilder result = new StringBuilder("""
+                <form action=''>
+                Name: <input type='text' name='name' value=''><br/>
+                Surname: <input type='text' name='surname' value=''><br/>
+                <input type='submit' value='Find'></form><br/>
+                <table>\n""");
+
+        for (Teacher t : teachers) {
+            result.append("<tr>\n")
+                    .append("<td>").append(t.getId()).append("</td>\n")
+                    .append("<td>").append(t.getFirstName()).append("</td>\n")
+                    .append("<td>").append(t.getLastName()).append("</td>\n")
+                    .append("</tr>\n");
+        }
+
+        result.append("</table><br>\n<a href='/'>Back</a>\n");
+        return result.toString();
     }
 
-    // TODO Implement deleteTeacher() method
-    public String deleteTeacher() {
-        return "";
+    @GetMapping("deleteTeacher")
+    @ResponseBody
+    public String deleteTeacher(@RequestParam(value = "id", required = false) String idStr,
+                                HttpServletResponse response) {
+        if (idStr == null) {
+            return """
+                    <form action=''>
+                    ID: <input type='text' name='id' value=''><br/>
+                    <input type='submit' value='Delete'></form><br/>
+                    <a href='/'>Back</a>\n""";
+        }
+
+        try {
+            int id = Integer.parseInt(idStr);
+            boolean result = manager.deleteTeacher(id);
+            response.setStatus(HttpServletResponse.SC_OK);
+            return result + "<br/>\n<a href='/'>Back</a>\n";
+        } catch (Exception e) {
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            return "false<br/>\n<a href='/'>Back</a>\n";
+        }
     }
 }
