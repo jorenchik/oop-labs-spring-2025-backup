@@ -1,3 +1,5 @@
+package jtm.extra04;
+
 public class Dog extends Mammal {
     private String name;
 
