@@ -1,43 +1,101 @@
 package jtm.extra06;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import jakarta.persistence.Transient;
+import jakarta.persistence.*;
 
 import java.util.Objects;
 
-// This is persistent class using Jakarta JPA annotations
-// TODO Annotate class as an @Entity, to say that its instances can be stored in the database.
+@Entity
 @Table(name = "Person")
 public class Person {
-    // TODO Annotate this field as @Transient (so it will not be saved in database)
+
+    @Transient
     static final int defaultTypeId = 1;
 
-    // TODO Annotate id field as @Id to mark it as a primary key field
-    // and as  @Column(nullable = false) to save it in database disallowing nulls
+    @Id
+    @Column(nullable = false)
     private int id;
 
-    // TODO mark this property as @Column(nullable = false)
+    @Column(nullable = false)
     private int typeId;
-    // TODO mark this property as @Column(name = "firstname", nullable = false, length = 100)
-    // Note that column in database has all lowercase letters
+
+    @Column(name = "firstname", nullable = false, length = 100)
     private String firstName;
 
-    // TODO mark this property as @Column(name = "lastname", nullable = false, length = 100)
-    // Note that column in database has all lowercase letters
+    @Column(name = "lastname", nullable = false, length = 100)
     private String lastName;
 
-    // TODO create empty default constructor required by JPA
+    // Default constructor required by JPA
+    public Person() {}
 
-    // TODO create public constructor using all parameters for properties
+    // Constructor using all parameters
+    public Person(int id, int typeId, String firstName, String lastName) {
+        this.id = id;
+        this.typeId = typeId;
+        this.firstName = firstName;
+        this.lastName = lastName;
+    }
 
-    // TODO create public constructor taking parameters: int id, String firstName, String lastName
-    // in which case defaultTypeId is set for typeId
+    // Constructor using default typeId
+    public Person(int id, String firstName, String lastName) {
+        this(id, defaultTypeId, firstName, lastName);
+    }
 
-    // TODO generate public getters and setters for properties
-    // TODO generate toString() showing all properties: id, typeId, firstName, and lastName
+    // Getters and Setters
+    public int getId() {
+        return id;
+    }
 
-    // TODO generate equals(...) and hashCode() methods using all properties:id, typeId, firstName, and lastName,
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public int getTypeId() {
+        return typeId;
+    }
+
+    public void setTypeId(int typeId) {
+        this.typeId = typeId;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    @Override
+    public String toString() {
+        return "Person{" +
+                "id=" + id +
+                ", typeId=" + typeId +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Person)) return false;
+        Person person = (Person) o;
+        return id == person.id &&
+                typeId == person.typeId &&
+                Objects.equals(firstName, person.firstName) &&
+                Objects.equals(lastName, person.lastName);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, typeId, firstName, lastName);
+    }
 }
