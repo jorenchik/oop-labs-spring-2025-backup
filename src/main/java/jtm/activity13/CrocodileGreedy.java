@@ -21,6 +21,10 @@ public class CrocodileGreedy implements Crocodile {
         moves++;
     }
 
+	void recordCandyOnly() {
+		candies++;
+	}
+
     @Override public int   getMoves()   { return moves;   }
     @Override public int   getCandies() { return candies; }
     @Override public String getType()   { return "CrocodileGreedy"; }
