@@ -25,6 +25,10 @@ public class CrocodileGreedy implements Crocodile {
 		candies++;
 	}
 
+	public void incrementMoves() {
+		this.moves++;
+	}
+
     @Override public int   getMoves()   { return moves;   }
     @Override public int   getCandies() { return candies; }
     @Override public String getType()   { return "CrocodileGreedy"; }

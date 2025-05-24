@@ -1,41 +1,52 @@
-// File: src/jtm/activity13/MoveGreedy.java
 package jtm.activity13;
 
 public class MoveGreedy implements MoveStrategy {
-	@Override
-	public void move(Crocodile crocodile, Board board) {
-		CrocodileGreedy c = (CrocodileGreedy) crocodile;
-		int maxX = board.getX(), maxY = board.getY();
-		int x = 0, y = 0;
 
-		// handle start
-		if (board.getCandy(x, y) == '●') {
-			c.recordCandyOnly();
-		}
-		board.setCandy(x, y, '◎');
+    @Override
+    public void move(Crocodile crocodile, Board board) {
 
-		while (x < maxX - 1 || y < maxY - 1) {
-			boolean canE = x < maxX - 1;
-			boolean canS = y < maxY - 1;
+        CrocodileGreedy c = (CrocodileGreedy) crocodile;
 
-			int nx = x, ny = y;
+        int width = board.getX();
+        int height = board.getY();
+        boolean firstStep = true;
 
-			char e = canE ? board.getCandy(x + 1, y) : 0;
-			char s = canS ? board.getCandy(x, y + 1) : 0;
+        // Zigzag traversal.
+        for (int row = 0; row < height; row++) {
+            if (row % 2 == 0) {
+                for (int col = 0; col < width; col++) {
+                    firstStep = step(c, board, col, row, firstStep);
+                }
+            } else {
+                for (int col = width - 1; col >= 0; col--) {
+                    firstStep = step(c, board, col, row, firstStep);
+                }
+            }
+        }
 
-			if (canE && e == '●') {
-				nx++;
-			} else if (canS && s == '●') {
-				ny++;
-			} else if (canE) {
-				nx++;
-			} else {
-				ny++;
-			}
-
-			x = nx;
-        y = ny;
-        c.recordStep(board, x, y);
+        // Extra left-to-right pass over last row (if height is even)
+        if (height % 2 == 0) {
+            int row = height - 1;
+            boolean firstExtraStep = true;
+            for (int col = 0; col < width; col++) {
+                firstExtraStep = step(c, board, col, row, firstExtraStep);
+            }
+        }
     }
-}
+
+    private boolean step(CrocodileGreedy c, Board board, int x, int y, boolean firstStep) {
+        char cell = board.getCandy(x, y);
+
+        if (cell == '●') {
+            c.recordCandyOnly();
+        }
+
+        board.setCandy(x, y, '◎');
+
+        if (!firstStep) {
+            c.incrementMoves();
+        }
+
+        return false; // All future calls are not the first
+    }
 }
